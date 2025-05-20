@@ -14,7 +14,7 @@ $stmt = $pdo->prepare("SELECT id FROM account_deletion_requests WHERE user_id = 
 $stmt->execute([$user_id]);
 if ($stmt->fetch()) {
     $_SESSION['message'] = "You already have a pending deletion request.";
-    header('Location: profile.php');
+    header('Location: goodbye.php');
     exit;
 }
 
@@ -23,5 +23,5 @@ $stmt = $pdo->prepare("INSERT INTO account_deletion_requests (user_id) VALUES (?
 $stmt->execute([$user_id]);
 
 $_SESSION['message'] = "Account deletion request submitted. Await admin approval.";
-header('Location: profile.php');
+header('Location: goodbye.php');
 exit;

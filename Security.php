@@ -18,6 +18,8 @@
             --border: #e9ecef;
             --text-muted: #6c757d;
             --sidebar-width: 250px;
+            --glass: rgba(255, 255, 255, 0.1);
+            --sidebar-bg: rgba(15, 23, 42, 0.9);
         }
 
         * {
@@ -35,61 +37,106 @@
         }
 
         /* Sidebar Styles */
-        .sidebar {
-            width: var(--sidebar-width);
-            background: var(--dark);
-            color: white;
-            height: 100vh;
-            position: fixed;
-            padding: 1.5rem 1rem;
-            border-right: 1px solid rgba(255, 255, 255, 0.1);
-        }
+    .sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        height: 100vh;
+        width: var(--sidebar-width);
+        background: var(--sidebar-bg);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        padding: 1.5rem 1rem;
+        z-index: 100;
+        transition: transform 0.3s ease;
+        border-right: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+        overflow-y: auto;
+    }
 
-        .sidebar a {
-            display: flex;
-            align-items: center;
-            gap: 0.8rem;
-            padding: 0.8rem 1rem;
-            margin-bottom: 0.5rem;
-            color: white;
-            text-decoration: none;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-            z-index: 0;
-        }
+    .sidebar-header {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding-bottom: 1.5rem;
+        margin-bottom: 1rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
 
-        .sidebar a:hover {
-            background: rgba(0, 255, 204, 0.1);
-            color: var(--accent);
-        }
+    .sidebar-title {
+        font-size: 1.3rem;
+        font-weight: 600;
+        background: linear-gradient(to right, var(--primary), var(--accent));
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+    }
 
-        .sidebar a i {
-            width: 20px;
-            text-align: center;
-        }
+    .sidebar-nav {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
 
-        .logout-btn {
-            margin-top: 2rem;
-            background: rgba(239, 35, 60, 0.1);
-            color: var(--error) !important;
-        }
+    .sidebar a {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        padding: 0.8rem 1rem;
+        margin-bottom: 0.5rem;
+        color: var(--light);
+        text-decoration: none;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        font-size: 0.95rem;
+    }
 
-        .sidebar-toggle {
-            display: none;
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            z-index: 100;
-            background: var(--primary);
-            color: white;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-        }
+    .sidebar a:hover {
+        background: rgba(0, 198, 255, 0.1);
+        color: var(--accent);
+        transform: translateX(5px);
+    }
+
+    .sidebar a i {
+        width: 20px;
+        text-align: center;
+        font-size: 1.1rem;
+    }
+
+    .sidebar-footer {
+        margin-top: auto;
+        padding-top: 1.5rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .logout-btn {
+        background: rgba(255, 77, 77, 0.1);
+        color: var(--error) !important;
+    }
+
+    .logout-btn:hover {
+        background: rgba(255, 77, 77, 0.2) !important;
+    }
+
+    /* Mobile Sidebar Toggle */
+    .sidebar-toggle {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        z-index: 101;
+        background: var(--primary);
+        backdrop-filter: blur(10px);
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        color: var(--light);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        border: none;
+    }
 
         /* Main Content */
         .security-container {
@@ -356,16 +403,23 @@
     </style>
 </head>
 <body>
-    <div class="sidebar-toggle">
+    <button class="sidebar-toggle">
         <i class="fa-solid fa-bars"></i>
-    </div>
+    </button>
     <div class="sidebar">
-        <a href="dashboard.php"><i class="fa-solid fa-gauge"></i> Dashboard</a>
-        <a href="setup_profile.php"><i class="fa-solid fa-user"></i> Profile</a>
-        <a href="faq.php"><i class="fa-solid fa-circle-question"></i> FAQs</a>
-        <a href="contact.php"><i class="fa-solid fa-address-book"></i> Contact</a>
-        <a href="Security.php"><i class="fa-solid fa-lock"></i> Security & Compliance</a>
-        <a href="logout.php" class="logout-btn"><i class="fa-solid fa-door-open"></i> Logout</a>
+        <div class="sidebar-header">
+            <span class="sidebar-title">AltraFi</span>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="dashboard.php"><i class="fa-solid fa-gauge"></i> Dashboard</a>
+            <a href="setup_profile.php"><i class="fa-solid fa-user"></i> Profile</a>
+            <a href="faq.php"><i class="fa-solid fa-circle-question"></i> FAQs</a>
+            <a href="contact.php"><i class="fa-solid fa-address-book"></i> Contact</a>
+            <a href="Security.php"><i class="fa-solid fa-lock"></i> Security</a>
+        </nav>
+        <div class="sidebar-footer">
+            <a href="logout.php" class="logout-btn"><i class="fa-solid fa-door-open"></i> Logout</a>
+        </div>
     </div>
 
     <div class="security-container">

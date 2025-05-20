@@ -15,23 +15,66 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         die('Invalid request');
     }
 
-    // Check transaction exists and is pending
-    $stmt = $pdo->prepare("SELECT status FROM transactions WHERE id = ?");
-    $stmt->execute([$transaction_id]);
-    $transaction = $stmt->fetch();
+    try {
+        $pdo->beginTransaction();
 
-    if (!$transaction || $transaction['status'] !== 'pending') {
-        die('Transaction not found or not pending');
+        // Get transaction details with user balance
+        $stmt = $pdo->prepare("
+            SELECT t.*, u.balance, u.id AS user_id 
+            FROM transactions t
+            JOIN users u ON t.user_id = u.id 
+            WHERE t.id = ? AND t.status = 'pending'
+        ");
+        $stmt->execute([$transaction_id]);
+        $transaction = $stmt->fetch();
+
+        if (!$transaction) {
+            throw new Exception('Transaction not found or not actionable');
+        }
+
+        if ($action === 'approve') {
+            // Approval logic
+            $new_balance = $transaction['balance'] + $transaction['amount'];
+            $update = $pdo->prepare("UPDATE users SET balance = ? WHERE id = ?");
+            $update->execute([$new_balance, $transaction['user_id']]);
+            
+            $status = 'approved';
+        } else {
+            // Cancellation (reversal) logic
+            $new_balance = $transaction['balance'] - $transaction['amount'];
+            $update = $pdo->prepare("UPDATE users SET balance = ? WHERE id = ?");
+            $update->execute([$new_balance, $transaction['user_id']]);
+            
+            // Create reversal audit record
+            $stmt = $pdo->prepare("
+                INSERT INTO transactions 
+                (user_id, amount, description, status, reversal_ref_id, created_at)
+                VALUES (?, ?, ?, 'reversed', ?, NOW())
+            ");
+            $stmt->execute([
+                $transaction['user_id'],
+                -$transaction['amount'],
+                "Reversal of transaction #$transaction_id",
+                $transaction_id
+            ]);
+            
+            $status = 'cancelled';
+        }
+
+        // Update original transaction
+        $update = $pdo->prepare("
+            UPDATE transactions 
+            SET status = ?, updated_at = NOW() 
+            WHERE id = ?
+        ");
+        $update->execute([$status, $transaction_id]);
+
+        $pdo->commit();
+        header('Location: admin_dashboard.php');
+        exit;
+
+    } catch (Exception $e) {
+        $pdo->rollBack();
+        die('Error processing transaction: ' . $e->getMessage());
     }
-
-    $new_status = $action === 'approve' ? 'approved' : 'cancelled';
-
-    // Update transaction status
-    $update = $pdo->prepare("UPDATE transactions SET status = ? WHERE id = ?");
-    $update->execute([$new_status, $transaction_id]);
-
-    // Implement wallet balance update or notification on approval/cancellation
-
-    header('Location: admin_dashboard.php');
-    exit;
 }

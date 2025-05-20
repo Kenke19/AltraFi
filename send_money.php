@@ -8,7 +8,7 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $code = $_POST['code'] ?? '';
+    $password = $_POST['password'] ?? '';
     $sender_id = $_SESSION['user_id'];
     $recipient_username = trim($_POST['recipient']);
     $amount = floatval($_POST['amount']);
@@ -32,8 +32,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->execute([$sender_id]);
     $user = $stmt->fetch();
 
-    if (!$user || !password_verify($code, $user['password'])) {
-        $_SESSION['send_error'] = "Invalid 4-digit code.";
+    if (!$user || $password !== $user['password']) {
+        $_SESSION['send_error'] = "Invalid password";
         header("Location: dashboard.php");
         exit();
     }

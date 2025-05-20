@@ -11,7 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $user_id = $_POST['user_id'] ?? null;
     $action = $_POST['action'] ?? null;
 
-    if (!$user_id || !in_array($action, ['make_admin', 'soft_delete', 'toggle_freeze'])) {
+    if (!$user_id || !in_array($action, ['soft_delete', 'toggle_freeze'])) {
         die('Invalid request');
     }
 
