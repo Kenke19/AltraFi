@@ -8,3 +8,6 @@ A full-stack PHP/JavaScript application for tracking income and expenses.
    ```bash
    git clone https://github.com/Kenke19/AltraFi.git
    cd AltraFi
+## 🌐 Live Demo  
+[Try it here](https://finance-app.infinityfreeapp.com/)  
+*(Note: Custom 404 page active!)*  
