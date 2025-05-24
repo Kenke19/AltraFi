@@ -1,9 +1,9 @@
 <?php
 
-$host = 'localhost';
-$dbname = 'AltraFi';
-$user = 'root';
-$pass = '';
+$host = 'your_server';
+$dbname = 'your_db_name';
+$user = 'your_username';
+$pass = 'your_password';
 
 // PDO Connection
 try {
@@ -14,5 +14,5 @@ try {
 }
 
 // Paystack 
-define('PAYSTACK_SECRET_KEY', 'sk_test_accc9dcbc89207840a4600a269e0c47e1b53d122');
+define('PAYSTACK_SECRET_KEY', 'your-paystack-secret-key');
 ?>
